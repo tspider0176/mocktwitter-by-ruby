@@ -5,3 +5,5 @@ source "https://rubygems.org"
 gem 'sinatra'
 gem 'sinatra-contrib'
 gem 'redcarpet'
+gem 'activerecord'
+gem 'mysql2'
