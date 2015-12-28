@@ -6,10 +6,15 @@ require 'sinatra/reloader' if development?
 
 # User クラス
 class User
+  # ツイートを保存するハッシュ
+  # 何番目のつぶやき(key) -> つぶやき内容(value)
+  @tweethash
+
   # コンストラクタ
   def initialize(id, display_name)
     @id = id
     @display_name = display_name
+    @tweethash = {}
   end
 
   # ToString
@@ -19,6 +24,10 @@ class User
 
   def id
     @id
+  end
+
+  def tweethash
+    @tweethash
   end
 end
 
@@ -91,6 +100,8 @@ end
 # タイムラインに投稿
 get '/home/post/:text' do |text|
   tl.add(Tweet.new(text, Time.now, present_user))
+  hash = {present_user.tweethash.size + 1 => text}
+  present_user.tweethash.merge!(hash)
   redirect to('/home')
 end
 
@@ -141,6 +152,14 @@ get '/userlist' do
   }
 end
 
+# 現在の操作ユーザー
 get '/p' do
   present_user.to_s
+end
+
+# 現在のユーザーのつぶやきリスト
+get '/t' do
+  present_user.tweethash.each{ |num, text|
+    "#{num}: #{text}"
+  }.to_s
 end
