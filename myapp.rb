@@ -22,11 +22,12 @@ present_user = nil
 get '/' do
 	begin
     @title = "Mock twitter"
+    @user = present_user
 
     tweets = Tweet.order("id")
     @data = tweets.map{ |tweet|
       user = User.find(tweet.user_id)
-      "#{tweet.id}: #{user.name} (@#{user.id}) on #{tweet.t_date}<br>#{tweet.tsubuyaki}<br>"
+      "#{tweet.id},#{user.name}(@#{user.id}),#{tweet.tsubuyaki},#{tweet.t_date}"
     }
     erb :index
   rescue
@@ -47,6 +48,12 @@ post '/login' do
   rescue
     "Login failed: No user id @#{params[:userid]}."
   end
+end
+
+# ログアウト
+post '/logout' do
+  present_user = nil
+  redirect('/')
 end
 
 # ツイート投稿
