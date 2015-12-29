@@ -30,7 +30,6 @@ get '/' do
       "#{tweet.id},#{user.name}(@#{user.id}),#{tweet.tsubuyaki},#{tweet.t_date}"
     }
     erb :index
-=begin
   rescue
     if tweets.size == 0 then
       "No tweets."
@@ -38,7 +37,6 @@ get '/' do
       "Tweets display error."
     end
   end
-=end
 end
 
 # ログイン
