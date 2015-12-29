@@ -21,11 +21,14 @@ present_user = nil
 # 投稿された全ユーザーのツイートを表示
 get '/' do
 	begin
+    @title = "Mock twitter"
+
     tweets = Tweet.order("id")
-    tweets.map{ |tweet|
+    @data = tweets.map{ |tweet|
       user = User.find(tweet.user_id)
       "#{tweet.id}: #{user.name} (@#{user.id}) on #{tweet.t_date}<br>#{tweet.tsubuyaki}<br>"
     }
+    erb :index
   rescue
     if tweets.size == 0 then
       "No tweets."
@@ -46,15 +49,15 @@ get '/login/:userid' do |userid|
 end
 
 # ツイート投稿
-get '/post/:text' do |text|
+post '/post' do
   if present_user != nil then
-  tweet = Tweet.new
-  tweet.tsubuyaki = text
-  tweet.user_id = present_user.id
-  tweet.t_date = Time.now
-  tweet.save
+    tweet = Tweet.new
+    tweet.tsubuyaki = params[:tsubuyaki]
+    tweet.user_id = present_user.id
+    tweet.t_date = Time.now
+    tweet.save
 
-  redirect to('/')
+    redirect('/')
   else
     "Please log in."
   end
