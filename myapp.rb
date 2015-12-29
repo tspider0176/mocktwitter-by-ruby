@@ -32,7 +32,8 @@ get '/' do
     erb :index
   rescue
     if tweets.size == 0 then
-      "No tweets."
+      @data = []
+      erb :index
     else
       "Tweets display error."
     end
