@@ -20,7 +20,7 @@ present_user = nil
 
 # 投稿された全ユーザーのツイートを表示
 get '/' do
-	begin
+	#begin
     @title = "Mock twitter"
     @user = present_user
 
@@ -30,6 +30,7 @@ get '/' do
       "#{tweet.id},#{user.name}(@#{user.id}),#{tweet.tsubuyaki},#{tweet.t_date}"
     }
     erb :index
+=begin
   rescue
     if tweets.size == 0 then
       "No tweets."
@@ -37,6 +38,7 @@ get '/' do
       "Tweets display error."
     end
   end
+=end
 end
 
 # ログイン
@@ -72,11 +74,11 @@ post '/post' do
 end
 
 # ツイート削除
-get '/delete/:id' do |id|
+post '/delete/:id' do |id|
   begin
     tweet = Tweet.find(id)
     tweet.destroy
-    "Deletion success."
+    redirect('/')
   rescue
     "No such tweet"
   end
