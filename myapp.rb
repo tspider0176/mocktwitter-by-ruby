@@ -39,12 +39,13 @@ get '/' do
 end
 
 # ログイン
-get '/login/:userid' do |userid|
+post '/login' do
   begin
-    present_user = User.find(userid)
-    "Login successful: You logged in as (@#{userid})."
+    present_user = User.find(params[:userid])
+    "Login successful: You logged in as (@#{params[:userid]})."
+    redirect('/')
   rescue
-    "Login failed: No user id @#{userid}."
+    "Login failed: No user id @#{params[:userid]}."
   end
 end
 

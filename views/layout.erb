@@ -5,7 +5,18 @@
     <title><%= @title %></title>
 </head>
 <body>
-  <%= yield %>
+  <p>
+  	Login Form
+  	<form method="post" action="/login">
+  	    <input type="text" name="userid"><input type="submit" value="Login">
+  	</form>
+  </p>
+  <p>
+  	Tweet Form
+  	<form method="post" action="/post">
+  	    <input type="text" name="tsubuyaki"><input type="submit" value="Tweet">
+  	</form>
+  </p>
   <p>
     <% @data.reverse.each do |tsubuyaki| %>
     <%= tsubuyaki %>
