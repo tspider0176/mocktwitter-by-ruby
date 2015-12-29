@@ -20,7 +20,7 @@ present_user = nil
 
 # 投稿された全ユーザーのツイートを表示
 get '/' do
-	#begin
+	begin
     @title = "Mock twitter"
     @user = present_user
 
