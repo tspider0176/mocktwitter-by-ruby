@@ -8,3 +8,9 @@ create table tweets (
   t_date DATETIME NOT NULL,
   PRIMARY KEY(id)
 );
+
+create table users (
+  id VARCHAR(15) NOT NULL,
+  name VARCHAR(20) NOT NULL,
+  PRIMARY KEY(id)
+);

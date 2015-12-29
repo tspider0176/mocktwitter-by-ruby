@@ -13,59 +13,36 @@ ActiveRecord::Base.establish_connection(:development)
 class Tweet < ActiveRecord::Base
 end
 
-# User クラス
-class User
-  # ツイートを保存するハッシュ
-  # 何番目のつぶやき(key) -> つぶやき内容(value)
-  @tweethash
-
-  # コンストラクタ
-  def initialize(id, display_name)
-    @id = id
-    @display_name = display_name
-    @tweethash = {}
-  end
-
-  # ToString
-  def to_s
-    "#{@display_name}(@#{@id})"
-  end
-
-  def id
-    @id
-  end
-
-  def tweethash
-    @tweethash
-  end
+class User < ActiveRecord::Base
 end
 
-# 登録されたユーザーを保持 User型の配列
-users = Array.new()
 present_user = nil
-
-# ログイン
-get '/login/:userid' do |userid|
-  if users.select{|user| user.id == userid}.size == 0 then
-    "Login failed: Please register user."
-  elsif users.select{|user| user.id == userid}.size != 0 then
-    present_user = users.select{ |user|
-      user.id == userid
-    }.first
-    "Login successful: You logged in as (@#{userid})."
-  else
-    "Login failed: No user id @#{userid}."
-  end
-end
 
 # 投稿された全ユーザーのツイートを表示
 get '/' do
-	#erb :timeline
-  tweets = Tweet.order("id")
-  tweets.map{ |tweet|
-    user = users.select{|user| user.id == tweet.user_id}.first
-    "#{tweet.id}: #{user.to_s}<br>#{tweet.tsubuyaki}<br>"
-  }
+	begin
+    tweets = Tweet.order("id")
+    tweets.map{ |tweet|
+      user = User.find(tweet.user_id)
+      "#{tweet.id}: #{user.name} (@#{user.id}) on #{tweet.t_date}<br>#{tweet.tsubuyaki}<br>"
+    }
+  rescue
+    if tweets.size == 0 then
+      "No tweets."
+    else
+      "Tweets display error."
+    end
+  end
+end
+
+# ログイン
+get '/login/:userid' do |userid|
+  begin
+    present_user = User.find(userid)
+    "Login successful: You logged in as (@#{userid})."
+  rescue
+    "Login failed: No user id @#{userid}."
+  end
 end
 
 # ツイート投稿
@@ -76,9 +53,6 @@ get '/post/:text' do |text|
   tweet.user_id = present_user.id
   tweet.t_date = Time.now
   tweet.save
-
-  hash = {present_user.tweethash.size + 1 => text}
-  present_user.tweethash.merge!(hash)
 
   redirect to('/')
   else
@@ -97,50 +71,58 @@ get '/delete/:id' do |id|
   end
 end
 
+# ユーザー作成
+get '/user/create/:id/:disp_name' do |id, disp_name|
+  #同一idを持つユーザーがいなければユーザー作成
+  begin
+    User.where("id = '#{id}'")
+    user = User.new
+    user.id = id
+    user.name = disp_name
+    user.save
+
+    "User create successful: Please log in."
+  rescue
+    "User create failed: Same id already exists."
+  end
+end
+
 # ユーザ指定ツイート表示
 get '/user/tweets/:userid' do |userid|
   begin
     tweets = Tweet.where("user_id = '#{userid}'")
     tweets.map{ |tweet|
-      user = users.select{|user| user.id == tweet.user_id}.first
-      "#{tweet.id}: #{user.to_s}<br>#{tweet.tsubuyaki}<br>"
+      user = User.find(userid)
+      "#{tweet.id}: user.name (@#{user.id}) on #{tweet.t_date} <br>#{tweet.tsubuyaki}<br>"
     }
   rescue
     "No such user id."
   end
 end
 
-# ユーザー作成
-get '/user/create/:id/:disp_name' do |id, disp_name|
-  #同一idを持つユーザーがいなければユーザー作成
-  if users.select{ |user| user.id == id}.size == 0 then
-    newuser = User.new(id, disp_name)
-    users.insert(-1, newuser)
-    "User create successful"
-  else
-    "User create failed: Same id already exists"
-  end
-end
-
 # ユーザー削除
 get '/user/delete/:userid' do |userid|
-  if present_user.id == userid
-    "Deletion failed: Please logout (@#{userid})."
-  elsif users.select{|user| user.id == userid}.size != 0 then
-    users.reject!{ |user|
-      user.id == userid
-    }
+  begin
+    user = User.find(userid)
+    user.destroy
     "Deletion successful: (@#{userid})."
-  else
+  rescue
     "Deletion failed: No user id @#{userid}."
   end
 end
 
 # ユーザーリスト
 get '/user' do
-  users.map{ |user|
-    user.to_s + "<br>"
-  }
+  content_type :html
+
+  begin
+    User.all.each do |user|
+      body << "#{user.name} (@#{user.id})<br>"
+    end
+    body
+  rescue
+    "No user."
+  end
 end
 
 # 現在の操作ユーザー
