@@ -132,18 +132,23 @@ post '/delete/:id' do |id|
 end
 
 # ユーザー作成
-post '/user/create/:id/:disp_name' do |id, disp_name|
+post '/user/create' do
   #同一idを持つユーザーがいなければユーザー作成
   begin
-    User.where("id = '#{id}'")
+    User.where("id = '#{param[:userid]}'")
+    "User creation failed: Same id already exists."
+  rescue
+    begin
+    # ユーザー作成
     user = User.new
-    user.id = id
-    user.name = disp_name
+    user.id = params[:userid]
+    user.name = params[:username]
     user.save
 
-    "User creation successful."
-  rescue
-    "User creation failed: Same id already exists."
+    redirect('/')
+    rescue
+      "User creation failed during creating user."
+    end
   end
 end
 
