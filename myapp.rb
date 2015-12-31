@@ -19,9 +19,9 @@ end
 
 present_user = nil
 
-# 投稿された全ユーザーのツイートを表示
+# トップページ
 get '/' do
-	#begin
+	begin
     @title = "Mock twitter"
     @user = present_user
 
@@ -72,7 +72,6 @@ get '/' do
       end
     }
     erb :index
-=begin
   rescue
     if tweets.size == 0 then
       @data = []
@@ -81,7 +80,12 @@ get '/' do
       "Tweets display error."
     end
   end
-=end
+end
+
+# 登録ページ
+get '/register' do
+  @title = "ユーザー登録"
+  erb :register
 end
 
 # ログイン
@@ -128,7 +132,7 @@ post '/delete/:id' do |id|
 end
 
 # ユーザー作成
-get '/user/create/:id/:disp_name' do |id, disp_name|
+post '/user/create/:id/:disp_name' do |id, disp_name|
   #同一idを持つユーザーがいなければユーザー作成
   begin
     User.where("id = '#{id}'")
@@ -137,9 +141,9 @@ get '/user/create/:id/:disp_name' do |id, disp_name|
     user.name = disp_name
     user.save
 
-    "User create successful: Please log in."
+    "User creation successful."
   rescue
-    "User create failed: Same id already exists."
+    "User creation failed: Same id already exists."
   end
 end
 
