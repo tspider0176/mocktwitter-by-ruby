@@ -131,6 +131,17 @@ post '/delete/:id' do |id|
   end
 end
 
+# ユーザーリスト
+get '/user' do
+  begin
+    @userarr = User.all
+
+    erb :users
+  rescue
+    "No user."
+  end
+end
+
 # ユーザー作成
 post '/user/create' do
   #同一idを持つユーザーがいなければユーザー作成
@@ -174,23 +185,4 @@ get '/user/delete/:userid' do |userid|
   rescue
     "Deletion failed: No user id @#{userid}."
   end
-end
-
-# ユーザーリスト
-get '/user' do
-  content_type :html
-
-  begin
-    User.all.each do |user|
-      body << "#{user.name} (@#{user.id})<br>"
-    end
-    body
-  rescue
-    "No user."
-  end
-end
-
-# 現在の操作ユーザー
-get '/p' do
-  present_user.to_s
 end
