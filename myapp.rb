@@ -38,13 +38,30 @@ get '/' do
         linkedpos = 0
         urls.each do |url|
           if linkedpos < text.length then
-            #現在リンク済みのurl以降のurlを検索 -> 重複したurlが入れ子でリンクされるのを回避
+            #現在リンク済み以降のurlを検索 -> 重複したurlが入れ子でリンクされるのを回避
             urlpos= text.index(url, linkedpos)
 
-            text.insert(text.index(url, urlpos), "<a href=\"")
-            text.insert(text.index(url, urlpos) + url.length, "\">#{url}</a>")
+            # YoutubeのURLとそれ以外のURLでリンクの種類を変える
+            uri = URI.parse(url).host
+            if uri == "www.youtube.com" then
+              # フレームに加えURLも変更する必要がある
+              # ex. https://www.youtube.com/embed/F_p4WG_t3Ug
+              parsed = URI.split(url)
+              embedurl = parsed[0] + "://" + parsed[2] + "/embed/" + parsed[7][2..12]
+              # text内のurlを埋め込み用URLへ置換
+              text.sub!(url, embedurl)
+
+              # リンク挿入
+              text.insert(text.index(embedurl, urlpos), "<iframe width=\"560\" height=\"315\" src=\"")
+              text.insert(text.index(embedurl, urlpos) + embedurl.length, "\" frameborder=\"0\" allowfullscreen></iframe>")
+            else
+              # リンク挿入
+              text.insert(text.index(url, urlpos), "<a href=\"")
+              text.insert(text.index(url, urlpos) + url.length, "\">#{url}</a>")
+            end
 
             # リンク済み地点を進める(<a>内のURLと表示されるURL分)
+            # このループでリンク処理されたurl以降の判定に使うので結構曖昧
             linkedpos = urlpos + url.length + url.length
           end
         end
