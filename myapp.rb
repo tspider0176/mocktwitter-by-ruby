@@ -5,6 +5,7 @@ require 'date'
 require 'sinatra/reloader' if development?
 require 'active_record'
 require 'mysql2'
+require 'uri'
 
 # Import files for database
 ActiveRecord::Base.configurations = YAML.load_file('database.yml')
@@ -20,16 +21,41 @@ present_user = nil
 
 # 投稿された全ユーザーのツイートを表示
 get '/' do
-	begin
+	#begin
     @title = "Mock twitter"
     @user = present_user
 
     tweets = Tweet.order("id")
-    @data = tweets.map{ |tweet|
+      @data = tweets.map{ |tweet|
       user = User.find(tweet.user_id)
-      "#{tweet.id},#{user.name}(@#{user.id}),#{tweet.tsubuyaki},#{tweet.t_date}"
+
+      # URLを含む文字列だった場合はURLに<a href="...">～</a>を加える
+      if tweet.tsubuyaki.include?("http") then
+        urls = URI.extract(tweet.tsubuyaki)
+        text = tweet.tsubuyaki
+
+        # リンク済みの地点
+        linkedpos = 0
+        urls.each do |url|
+          if linkedpos < text.length then
+            #現在リンク済みのurl以降のurlを検索 -> 重複したurlが入れ子でリンクされるのを回避
+            urlpos= text.index(url, linkedpos)
+
+            text.insert(text.index(url, urlpos), "<a href=\"")
+            text.insert(text.index(url, urlpos) + url.length, "\">#{url}</a>")
+
+            # リンク済み地点を進める(<a>内のURLと表示されるURL分)
+            linkedpos = urlpos + url.length + url.length
+          end
+        end
+
+        "#{tweet.id},#{user.name}(@#{user.id}),#{text},#{tweet.t_date}"
+      else
+        "#{tweet.id},#{user.name}(@#{user.id}),#{tweet.tsubuyaki},#{tweet.t_date}"
+      end
     }
     erb :index
+=begin
   rescue
     if tweets.size == 0 then
       @data = []
@@ -38,6 +64,7 @@ get '/' do
       "Tweets display error."
     end
   end
+=end
 end
 
 # ログイン
