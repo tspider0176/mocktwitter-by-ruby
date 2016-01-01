@@ -22,36 +22,45 @@
       </div>
       <address><strong>課題プロジェクト, 迫真ICPC課, アプリ開発部.</strong><br>
       <a href="/register">ユーザー登録はこちら</a><br>
-      <a href="/user">登録ユーザーの一覧はこちら</a>
+      <a href="/userlist">登録ユーザーの一覧はこちら</a>
     </div>
 
-    <% if @user != nil then %>
-      <h3> You are logged in as <%= @user.name %> (@<%= @user.id %>) </h3>
+    <div class="text-center">
+      <% if @user != nil then %>
+        <h3>You are logged in as <%= @user.name %> (@<%= @user.id %>)</h3>
+        <a href="/user/<%=@user.id%>">ユーザーページはこちら</a>
 
-      <form method="post" action="/logout">
-        <div class=”form-group”>
-          <input type="submit" class="btn btn-default" name="logout" value = "Logout">
-        </div>
-      </form>
-    <% else %>
-      <h3>Login Form</h3>
-      <form method="post" action="/login">
-        <div class=”form-group”>
-          <input type="text" class=”form-control” id=”inputId″ placeholder="User ID" maxlength="15" name="userid" required>
-          <input type="submit" value="Login">
-        </div>
-      </form>
-    <% end %>
-
-  	<h3>Tweet Form</h3>
-  	<form method="post" action="/post">
-      <div class=”form-group”>
-  	    <input type="text" class=”form-control” id=”inputText″ placeholder=いまなにしてんの？ maxlength="140" name="tsubuyaki" required>
-        <input type="submit" class="btn btn-default" value="Tweet">
-      </div>
-  	</form>
-
-    <h3>ツイート一覧</h3>
+        <form method="post" action="/logout">
+          <div class=”form-group”>
+            <input type="submit" class="btn btn-default" name="logout" value = "Logout">
+          </div>
+        </form>
+      <% else %>
+        <h3>Login form</h3>
+        <form method="post" action="/login">
+          <div class=”form-group”>
+            <input type="text" class=”form-control” id=”inputId″ placeholder="User ID" maxlength="15" name="userid" required>
+            <input type="submit" value="Login">
+          </div>
+        </form>
+      <% end %>
+    </div>
+    <br>
+    <div class="text-center">
+  	<h3>Tweet form</h3>
+    	<form method="post" action="/post">
+        <div class="row">
+  			  <div class="col-xs-12">
+  				    <input type="text" class="form-control" placeholder="いまなにしてんの？" maxlength="140" name="tsubuyaki" required>
+              <input type="submit" class="btn btn-default" value="Tweet">
+  			  </div>
+  		  </div>
+    	</form>
+    </div>
+    <br>
+    <div class="text-center">
+      <h3>All tweets</h3>
+    </div>
     <div class="container-fluid">
       <table class="table table-striped table-bordered table-condensed">
         <thead>

@@ -134,7 +134,7 @@ post '/delete/:id' do |id|
 end
 
 # ユーザーリスト
-get '/user' do
+get '/userlist' do
   begin
     @userarr = User.all
     @p_user = present_user
@@ -188,13 +188,58 @@ post '/user/delete/:userid' do |userid|
 end
 
 # ユーザ指定ツイート表示
-get '/user/tweets/:userid' do |userid|
+get '/user/:userid' do |userid|
   begin
+    @title = "ユーザーぺージ"
+    @user = present_user
+
     tweets = Tweet.where("user_id = '#{userid}'")
-    tweets.map{ |tweet|
+    @data = tweets.map{ |tweet|
       user = User.find(userid)
-      "#{tweet.id}: user.name (@#{user.id}) on #{tweet.t_date} <br>#{tweet.tsubuyaki}<br>"
+
+      # URLを含む文字列だった場合はURLに<a href="...">～</a>を加える
+      if tweet.tsubuyaki.include?("http") then
+        urls = URI.extract(tweet.tsubuyaki)
+        text = tweet.tsubuyaki
+
+        # リンク済みの地点
+        linkedpos = 0
+        urls.each do |url|
+          if linkedpos < text.length then
+            #現在リンク済み以降のurlを検索 -> 重複したurlが入れ子でリンクされるのを回避
+            urlpos= text.index(url, linkedpos)
+
+            # YoutubeのURLとそれ以外のURLでリンクの種類を変える
+            uri = URI.parse(url).host
+            if uri == "www.youtube.com" then
+              # フレームに加えURLも変更する必要がある
+              # ex. https://www.youtube.com/embed/F_p4WG_t3Ug
+              parsed = URI.split(url)
+              embedurl = parsed[0] + "://" + parsed[2] + "/embed/" + parsed[7][2..12]
+              # text内のurlを埋め込み用URLへ置換
+              text.sub!(url, embedurl)
+
+              # リンク挿入
+              text.insert(text.index(embedurl, urlpos), "<iframe width=\"560\" height=\"315\" src=\"")
+              text.insert(text.index(embedurl, urlpos) + embedurl.length, "\" frameborder=\"0\" allowfullscreen></iframe>")
+            else
+              # リンク挿入
+              text.insert(text.index(url, urlpos), "<a href=\"")
+              text.insert(text.index(url, urlpos) + url.length, "\">#{url}</a>")
+            end
+
+            # リンク済み地点を進める(<a>内のURLと表示されるURL分)
+            # このループでリンク処理されたurl以降の判定に使うので結構曖昧
+            linkedpos = urlpos + url.length + url.length
+          end
+        end
+
+        "#{tweet.id},#{user.name}(@#{user.id}),#{text},#{tweet.t_date}"
+      else
+        "#{tweet.id},#{user.name}(@#{user.id}),#{tweet.tsubuyaki},#{tweet.t_date}"
+      end
     }
+    erb :userpage
   rescue
     "No such user id."
   end
