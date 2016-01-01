@@ -113,7 +113,7 @@ post '/post' do
     tweet = Tweet.new
     tweet.tsubuyaki = params[:tsubuyaki]
     tweet.user_id = present_user.id
-    tweet.t_date = Time.now
+    tweet.t_date = Time.now.strftime("%Y-%m-%d %H:%M:%S")
     tweet.save
 
     redirect('/')
