@@ -78,6 +78,8 @@ get '/' do
       erb :index
     else
       "Tweets display error."
+      @data = []
+      erb :index
     end
   end
 end
@@ -135,6 +137,7 @@ end
 get '/user' do
   begin
     @userarr = User.all
+    @p_user = present_user
 
     erb :users
   rescue
@@ -163,6 +166,27 @@ post '/user/create' do
   end
 end
 
+# ユーザー削除
+post '/user/delete/:userid' do |userid|
+  begin
+    user = User.find(userid)
+
+    # ユーザーが今までに呟いたツイートを全て削除
+    tweets = Tweet.where("user_id = '#{userid}'")
+    tweets.each do |tweet|
+      tweet.destroy
+    end
+
+    # ユーザー削除
+    user.destroy
+    present_user = nil
+
+    redirect('/')
+  rescue
+    "Deletion failed: No user id @#{userid}."
+  end
+end
+
 # ユーザ指定ツイート表示
 get '/user/tweets/:userid' do |userid|
   begin
@@ -173,16 +197,5 @@ get '/user/tweets/:userid' do |userid|
     }
   rescue
     "No such user id."
-  end
-end
-
-# ユーザー削除
-get '/user/delete/:userid' do |userid|
-  begin
-    user = User.find(userid)
-    user.destroy
-    "Deletion successful: (@#{userid})."
-  rescue
-    "Deletion failed: No user id @#{userid}."
   end
 end

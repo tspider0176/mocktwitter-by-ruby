@@ -32,6 +32,7 @@
           <tr>
             <th><div class=text-center>ユーザーID</div></th>
             <th><div class=text-center>ユーザー名</div></th>
+            <th><div class=text-center>操作</div></th>
           </tr>
         </thead>
         <tbody>
@@ -40,6 +41,19 @@
             <tr>
               <td><%= user.id %></td>
               <td><%= user.name %></td>
+              <td>
+                <% if @p_user == nil then %>
+                  <% #非ログイン状態では無条件で表示しない %>
+                <% elsif user.id == @p_user.id then %>
+                  <form method="post" action="/user/delete/<%=@p_user.id%>">
+                    <div class=”form-group”>
+                      <input type="submit" class="btn btn-default" name="delete" value = "Delete">
+                    </div>
+                  </form>
+                <% else %>
+                    <% #対象アカウントでログインしていなければ表示しない %>
+                <% end %>
+              </td>
             </tr>
           <% end %>
         </tbody>
