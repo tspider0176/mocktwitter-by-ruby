@@ -77,9 +77,8 @@ get '/' do
       @data = []
       erb :index
     else
-      "Tweets display error."
-      @data = []
-      erb :index
+      @text = "Tweets display error."
+      erb :error
     end
   end
 end
@@ -97,7 +96,8 @@ post '/login' do
     "Login successful: You logged in as (@#{params[:userid]})."
     redirect('/')
   rescue
-    "Login failed: No user id @#{params[:userid]}."
+    @text = "Login failed: No user id @#{params[:userid]}."
+    erb :error
   end
 end
 
@@ -129,7 +129,8 @@ post '/delete/:id' do |id|
     tweet.destroy
     redirect('/')
   rescue
-    "No such tweet"
+    @text = "Tweet deletion failed: No such tweet"
+    erb :error
   end
 end
 
@@ -141,7 +142,8 @@ get '/userlist' do
 
     erb :users
   rescue
-    "No user."
+    @text = "User display failed: No user."
+    erb :error
   end
 end
 
@@ -150,7 +152,8 @@ post '/user/create' do
   #同一idを持つユーザーがいなければユーザー作成
   begin
     User.where("id = '#{param[:userid]}'")
-    "User creation failed: Same id already exists."
+    @text = "User creation failed: Same id already exists."
+    erb:error
   rescue
     begin
     # ユーザー作成
@@ -161,7 +164,8 @@ post '/user/create' do
 
     redirect('/')
     rescue
-      "User creation failed during creating user."
+      @text = "User creation failed during creating user."
+      erb :error
     end
   end
 end
@@ -183,7 +187,8 @@ post '/user/delete/:userid' do |userid|
 
     redirect('/')
   rescue
-    "Deletion failed: No user id @#{userid}."
+    @text = "User deletion failed: No user id @#{userid}."
+    erb :error
   end
 end
 
@@ -241,6 +246,7 @@ get '/user/:userid' do |userid|
     }
     erb :userpage
   rescue
-    "No such user id."
+    @text = "No such user id."
+    erb :error
   end
 end
