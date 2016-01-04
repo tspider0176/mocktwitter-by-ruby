@@ -118,7 +118,8 @@ post '/post' do
 
     redirect('/')
   else
-    "Please log in."
+    @text = "Please log in."
+    erb :error
   end
 end
 

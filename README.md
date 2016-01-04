@@ -8,6 +8,19 @@ Twitter-like web application by ruby and sinatra for self learning.
 * Bundler version 1.11.2
 * MySQL Server version: 5.6.26 Homebrew
 
+## Function
+* For newcomer
+    - Register this web app.
+    - See timeline which created by registered user.
+    - See registered user's list.
+    - See registered user's post on user's page.
+* For registered user
+    - Post to timeline.
+        - Plain text
+        - URL
+        - Embed Youtube Player
+    - Delete own post.
+
 ## Install
 Install ruby gems
 
