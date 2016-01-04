@@ -19,6 +19,7 @@
     <div class="text-center">
         <h1>(՞ةڼ◔)    Mock Twitter    (՞ةڼ◔)</h1>
       <address><strong>課題プロジェクト, 迫真ICPC課, アプリ開発部.</strong><br>
+      <address>Tom String(tspider0176)<br>
       <a href="/register">ユーザー登録はこちら</a><br>
       <a href="/userlist">登録ユーザーの一覧はこちら</a>
     </div>
@@ -73,14 +74,14 @@
             <% text = s[2] %>
             <% date = s[3] %>
 
+            <% userid = user[/(\(.*\))/, 1] %>
             <tr>
-              <td><%= user %></td>
+              <td><a href=/user/<%=userid[2..userid.length-2]%>><%= user %></a></td>
               <td><%= text %></td>
               <td><%= date %></td>
               <td>
-                <% userid = user[/(\(.*\))/, 1] %>
                 <% if @user == nil then%>
-
+                  <% #もし非ログイン状態であれば操作覧には何も表示しない %>
                 <% elsif @user.id == userid[2..userid.length-2] then %>
                   <form method="post" action="/delete/<%=num%>">
                     <div class=”form-group”>

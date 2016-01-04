@@ -23,9 +23,6 @@
   </head>
   <body>
     <div class=text-center>
-      <% if @user == nil then %>
-      <h3>ログインしてください</h3>
-      <% else%>
         <h3>(՞ةڼ◔)    <%=@user.name%>(@<%=@user.id%>) のツイート一覧    (՞ةڼ◔)</h3>
         <div>
           <a href="/">HOME</a>
@@ -55,7 +52,9 @@
                   <td><%= date %></td>
                   <td>
                     <% userid = user[/(\(.*\))/, 1] %>
-                    <% if @user.id == userid[2..userid.length-2] then %>
+                    <% if @p_user == nil then%>
+                      <% #もし非ログイン状態であれば操作覧には何も表示しない %>
+                    <% elsif @p_user.id == userid[2..userid.length-2] then %>
                       <form method="post" action="/delete/<%=num%>">
                         <div class=”form-group”>
                           <input type="submit" class="btn btn-default" name="delete" value = "Delete">
@@ -68,7 +67,6 @@
             </tbody>
           </table>
         </div>
-      <% end %>
     </div>
 
     <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->

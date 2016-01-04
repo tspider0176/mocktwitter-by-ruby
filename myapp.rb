@@ -30,9 +30,9 @@ get '/' do
       user = User.find(tweet.user_id)
 
       # URLを含む文字列だった場合はURLに<a href="...">～</a>を加える
-      if tweet.tsubuyaki.include?("http") then
-        urls = URI.extract(tweet.tsubuyaki)
-        text = tweet.tsubuyaki
+      text = tweet.tsubuyaki
+      if text.include?("http") then
+        urls = URI.extract(text)
 
         # リンク済みの地点
         linkedpos = 0
@@ -68,7 +68,7 @@ get '/' do
 
         "#{tweet.id},#{user.name}(@#{user.id}),#{text},#{tweet.t_date}"
       else
-        "#{tweet.id},#{user.name}(@#{user.id}),#{tweet.tsubuyaki},#{tweet.t_date}"
+        "#{tweet.id},#{user.name}(@#{user.id}),#{text},#{tweet.t_date}"
       end
     }
     erb :index
@@ -196,16 +196,17 @@ end
 get '/user/:userid' do |userid|
   begin
     @title = "ユーザーぺージ"
-    @user = present_user
+    @user = User.find(userid)
+    @p_user = present_user
 
     tweets = Tweet.where("user_id = '#{userid}'")
     @data = tweets.map{ |tweet|
-      user = User.find(userid)
+      #user = User.find(userid)
 
       # URLを含む文字列だった場合はURLに<a href="...">～</a>を加える
+      text = tweet.tsubuyaki
       if tweet.tsubuyaki.include?("http") then
-        urls = URI.extract(tweet.tsubuyaki)
-        text = tweet.tsubuyaki
+        urls = URI.extract(text)
 
         # リンク済みの地点
         linkedpos = 0
@@ -239,9 +240,9 @@ get '/user/:userid' do |userid|
           end
         end
 
-        "#{tweet.id},#{user.name}(@#{user.id}),#{text},#{tweet.t_date}"
+        "#{tweet.id},#{@user.name}(@#{@user.id}),#{text},#{tweet.t_date}"
       else
-        "#{tweet.id},#{user.name}(@#{user.id}),#{tweet.tsubuyaki},#{tweet.t_date}"
+        "#{tweet.id},#{@user.name}(@#{@user.id}),#{text},#{tweet.t_date}"
       end
     }
     erb :userpage
