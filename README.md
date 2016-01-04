@@ -15,10 +15,10 @@ Twitter-like web application by ruby and sinatra for self learning.
     - See registered user's list.
     - See registered user's post on user's page.
 * For registered user
-    - Post to timeline.
+    - Post text like below to timeline.
         - Plain text
         - URL
-        - Embed Youtube Player
+        - Embed Youtube Player(If you post youtube url, app automatically insert embed link)
     - Delete own post.
 
 ## Install
