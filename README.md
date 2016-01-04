@@ -1,7 +1,7 @@
 Mock twitter app
 ====
 ## Description
-Twitter-like web application by ruby and sinatra for self learning.
+Twitter-like web application by Ruby and Sinatra framework for homework on university.
 
 ## Environment
 * ruby 2.2.3p173
