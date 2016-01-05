@@ -22,6 +22,7 @@ Twitter-like web application by Ruby and Sinatra framework for homework on unive
     - Delete own post.
 
 ## Install
+Clone repository and change to cloned directory.  
 Install ruby gems
 
     bundle install
