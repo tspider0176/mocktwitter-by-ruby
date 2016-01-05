@@ -38,7 +38,7 @@
         <h3>Login form</h3>
         <form method="post" action="/login">
           <div class=”form-group”>
-            <input type="text" class=”form-control” id=”inputId″ placeholder="User ID" maxlength="15" name="userid" required>
+            <input type="text" class=”form-control” id=”inputId″ placeholder="User ID" maxlength="15" name="userid" pattern="^[0-9A-Za-z]+$" required>
             <input type="submit" value="Login">
           </div>
         </form>
